@@ -4,6 +4,7 @@ import fs from "fs";
 import dotenv from "dotenv";
 import { MongoClient, ObjectId } from "mongodb";
 import express from "express";
+import cors from "cors";
 
 // config
 const PORT = process.env.PORT || 1337;
@@ -11,6 +12,12 @@ dotenv.config({ path: ".env" });
 const app = express();
 const connectionString: any = process.env.connectionString;
 const DBNAME = "5b";
+const corsOptions = {
+  origin: function (origin: any, callback: any) {
+    return callback(null, true);
+  },
+  credentials: true,
+};
 
 //CREAZIONE E AVVIO DEL SERVER HTTP
 let server = http.createServer(app);
@@ -57,6 +64,9 @@ app.use("/", (req: any, res: any, next: any) => {
   }
   next();
 });
+
+// 6 Autorizzazioni CORS
+app.use("/", cors(corsOptions));
 
 // Apertura della connessione
 app.use("/api/", (req: any, res: any, next: any) => {
