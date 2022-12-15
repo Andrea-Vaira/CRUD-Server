@@ -53,7 +53,7 @@ app.use("/", express.static("./static"));
 app.use("/", express.json({ limit: "50mb" }));
 app.use("/", express.urlencoded({ limit: "50mb", extended: true }));
 
-// 4 log dei parametri get e post
+// 5 log dei parametri get e post
 app.use("/", (req: any, res: any, next: any) => {
   // parametri get .query, post .body
   if (Object.keys(req.query).length != 0) {
