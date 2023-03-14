@@ -1,4 +1,5 @@
 import http from "http";
+import https from "https";
 import url from "url";
 import fs from "fs";
 import dotenv from "dotenv";
@@ -12,12 +13,31 @@ dotenv.config({ path: ".env" });
 const app = express();
 const connectionString: any = process.env.connectionString;
 const DBNAME = "5b";
+const whiteList = [
+  "https://crudserver-andreavaira.onrender.com",
+  "http://localhost:1337",
+  "https://localhost:1338",
+  "http://localhost:4200",
+  "https://cordovaapp",
+];
 const corsOptions = {
-  origin: function (origin: any, callback: any) {
-    return callback(null, true);
+  origin: function (origin:any, callback:any) {
+    if (!origin)
+      // browser direct call
+      return callback(null, true);
+    if (whiteList.indexOf(origin) === -1) {
+      var msg = `The CORS policy for this site does not
+ allow access from the specified Origin.`;
+      return callback(new Error(msg), false);
+    } else return callback(null, true);
   },
   credentials: true,
 };
+
+const HTTPS_PORT = 1338;
+const privateKey = fs.readFileSync("keys/privateKey.pem", "utf8");
+const certificate = fs.readFileSync("keys/certificate.crt", "utf8");
+const credentials = { key: privateKey, cert: certificate };
 
 //CREAZIONE E AVVIO DEL SERVER HTTP
 let server = http.createServer(app);
@@ -25,7 +45,14 @@ let paginaErrore: string = "";
 
 server.listen(PORT, () => {
   init();
-  console.log("Server in ascolto sulla porta " + PORT);
+  // console.log("Server in ascolto sulla porta " + PORT);
+});
+
+let httpsServer = https.createServer(credentials, app);
+httpsServer.listen(HTTPS_PORT, function () {
+  console.log(
+    "Server in ascolto sulle porte HTTP:" + PORT + ", HTTPS:" + HTTPS_PORT
+  );
 });
 
 function init() {
@@ -132,7 +159,7 @@ app.get("/api/:collection", (req: any, res: any, next: any) => {
         let key = Object.keys(item)[1];
         response.push({ _id: item["_id"], val: item[key] });
       }
-      res.send(response);
+      res.send(data);
     }
     req["connessione"].close();
   });
