@@ -20,17 +20,25 @@ const whiteList = [
   "http://localhost:4200",
   "https://cordovaapp",
   "http://localhost:58903",
+  ""
 ];
+// const corsOptions = {
+//   origin: function (origin:any, callback:any) {
+//     if (!origin)
+//       // browser direct call
+//       return callback(null, true);
+//     if (whiteList.indexOf(origin) === -1) {
+//       var msg = `The CORS policy for this site does not
+//  allow access from the specified Origin.`;
+//       return callback(new Error(msg), false);
+//     } else return callback(null, true);
+//   },
+//   credentials: true,
+// };
+
 const corsOptions = {
   origin: function (origin:any, callback:any) {
-    if (!origin)
-      // browser direct call
-      return callback(null, true);
-    if (whiteList.indexOf(origin) === -1) {
-      var msg = `The CORS policy for this site does not
- allow access from the specified Origin.`;
-      return callback(new Error(msg), false);
-    } else return callback(null, true);
+    return callback(null, true);
   },
   credentials: true,
 };
