@@ -19,6 +19,7 @@ const whiteList = [
   "https://localhost:1338",
   "http://localhost:4200",
   "https://cordovaapp",
+  "http://localhost:58903",
 ];
 const corsOptions = {
   origin: function (origin:any, callback:any) {
@@ -154,11 +155,11 @@ app.get("/api/:collection", (req: any, res: any, next: any) => {
       res.status(500);
       res.send("Errore esecuzione query");
     } else {
-      let response = [];
-      for (const item of data) {
-        let key = Object.keys(item)[1];
-        response.push({ _id: item["_id"], val: item[key] });
-      }
+      // let response = [];
+      // for (const item of data) {
+      //   let key = Object.keys(item)[1];
+      //   response.push({ _id: item["_id"], val: item[key] });
+      // }
       res.send(data);
     }
     req["connessione"].close();
@@ -180,6 +181,21 @@ app.get("/api/:collection/:id", (req: any, res: any, next: any) => {
     req["connessione"].close();
   });
 });
+
+// app.post("/api/getFirstQuadroArtista", (req: any, res: any) => {
+//   let id = req.body.stream.id;
+//   let collection = req["connessione"].db(DBNAME).collection("quadri");
+//   collection
+//     .find({ artist: id })
+//     .toArray()
+//     .then((data: any) => {
+//       res.send(data);
+//     })
+//     .catch((err: any) => {
+//       res.status(500);
+//       res.send("Errore esecuzione query");
+//     });
+// });
 
 app.delete("/api/:collection/:id", (req: any, res: any, next: any) => {
   let collectionSelected = req.params.collection;
@@ -204,7 +220,7 @@ app.patch("/api/:collection/:id", (req: any, res: any, next: any) => {
   let collection = req["connessione"].db(DBNAME).collection(collectionSelected);
   collection.updateOne(
     { _id: id },
-    { $set: req.body.stream },
+    { $set: req.body },
     (err: any, data: any) => {
       if (err) {
         res.status(500);
@@ -222,7 +238,7 @@ app.put("/api/:collection/:id", (req: any, res: any, next: any) => {
   let id = new ObjectId(req.params.id);
 
   let collection = req["connessione"].db(DBNAME).collection(collectionSelected);
-  collection.replaceOne({ _id: id }, req.body.stream, (err: any, data: any) => {
+  collection.replaceOne({ _id: id }, req.body, (err: any, data: any) => {
     if (err) {
       res.status(500);
       res.send("Errore esecuzione query");
@@ -235,7 +251,7 @@ app.put("/api/:collection/:id", (req: any, res: any, next: any) => {
 
 app.post("/api/:collection", (req: any, res: any, next: any) => {
   let collectionSelected = req.params.collection;
-  let params = req.body.stream;
+  let params = req.body;
 
   let collection = req["connessione"].db(DBNAME).collection(collectionSelected);
   collection.insertOne(params, (err: any, data: any) => {

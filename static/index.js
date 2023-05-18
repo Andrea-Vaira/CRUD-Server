@@ -84,9 +84,7 @@ $(document).ready(function () {
         let request = inviaRichiesta(
           method,
           "/api/" + currentCollection + "/" + id,
-          {
-            stream,
-          }
+          stream
         );
         request.fail(errore);
         request.done((data) => {
@@ -124,9 +122,10 @@ $(document).ready(function () {
         .prop("_id", record._id)
         .prop("action", "get")
         .on("click", dettagli);
+      let key = Object.keys(record)[1];
       $("<td>")
         .appendTo(tr)
-        .text(record.val)
+        .text(record[key])
         .prop("_id", record._id)
         .prop("action", "get")
         .on("click", dettagli);
